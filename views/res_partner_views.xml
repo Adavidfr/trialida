@@ -1,0 +1,19 @@
+<odoo>
+  <record id="views_res_partner_form_inherit" model="ir.ui.view">
+    <field name="name">views.res.partner.form.inherit</field>
+    <field name="model">res.partner</field>
+    <field name="inherit_id" ref="base.view_partner_form"/>
+    <field name="arch" type="xml">
+      <xpath expr="//group/group[2]" position="after">
+        <separator string="Datos de empresa"/>
+        <group>
+          <field name="company_name"/>
+          <field name="company_phone"/>
+          <field name="company_address"/>
+          <field name="company_email"/>
+        </group>
+      </xpath>
+    </field>
+  </record>
+</odoo>
+

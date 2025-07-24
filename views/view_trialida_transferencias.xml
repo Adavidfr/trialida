@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+  <data>
+
+    <!-- Vista tipo formulario -->
+    <record id="view_trialida_transferencias_form" model="ir.ui.view">
+      <field name="name">trialida.transferencias.form</field>
+      <field name="model">trialida.transferencias</field>
+      <field name="arch" type="xml">
+        <form string="Transferencia">
+          <group>
+            <field name="cuenta_origen_id"/>
+            <field name="cuenta_destino_id"/>
+            <field name="destinatario" readonly="1"/>
+            <field name="monto"/>
+            <field name="referencia"/>
+          </group>
+          <group>
+            <field name="fecha_transferencia" required="1"/>
+          </group>
+          <footer>
+            <button name="realizar_transferencia"
+                    type="object"
+                    string="Ejecutar Transferencia"
+                    class="btn-primary"
+                    />
+            <button string="Cancelar" class="btn-secondary" special="cancel"/>
+
+            <button name="imprimir_comprobante"
+                    type="object"
+                    string="Imprimir Comprobante"
+                    class="btn-primary"/>
+
+
+          </footer>
+        </form>
+      </field>
+    </record>
+
+    <!-- Acción para abrir las transferencias (solo formulario) -->
+    <record id="action_trialida_transferencias" model="ir.actions.act_window">
+      <field name="name">Transferencias</field>
+      <field name="res_model">trialida.transferencias</field>
+      <field name="view_mode">form</field>
+      <field name="target">new</field>
+      <field name="view_id" ref="view_trialida_transferencias_form"/>
+    </record>
+
+    <!-- Menú en el sistema -->
+    <menuitem name="Transferencias" id="trialida_transferencias_menu"
+              parent="menu_root"
+              action="action_trialida_transferencias"
+              groups="trialida.trialida_cajero,trialida.trialida_socios"/>
+
+
+  </data>
+</odoo>

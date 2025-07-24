@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+  <data>
+    <record id="seq_trialida_cuentas" model="ir.sequence">
+      <field name="name">Creacion de cuentas</field>
+      <field name="code">trialida.cuentas</field>
+      <field name="prefix">TRI-</field>
+      <field name="suffix">-%(y)s</field>
+      <field name="padding">10</field>
+    </record>
+
+    <record id="seq_trialida_movimientos" model="ir.sequence">
+      <field name="name">Secuencia de movimientos</field>
+      <field name="code">trialida.movimientos</field>
+      <field name="prefix">MOV-%(year)s%(month)s%(day)s</field>
+      <field name="padding">3</field>
+      <!-- <field name="use_date_ranged">false</field> -->
+    </record>
+
+    <record id="seq_trialida_transferencias" model="ir.sequence">
+      <field name="name">Secuencia de transferencias</field>
+      <field name="code">trialida.transferencias</field>
+      <field name="prefix">TRA-</field>
+      <field name="padding">3</field>
+      <field name="number_next">1</field>
+      <field name="number_increment">1</field>
+    </record>
+
+    <record id="seq_trialida_prestamos" model="ir.sequence">
+      <field name="name">Secuencia de préstamos</field>
+      <field name="code">trialida.prestamos</field>
+      <field name="prefix">PRE-</field>
+      <field name="padding">3</field>
+      <field name="number_next">1</field>
+      <field name="number_increment">1</field>
+    </record>
+
+  </data>
+</odoo>

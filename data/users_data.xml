@@ -1,0 +1,40 @@
+<odoo>
+  <data>
+    <record model="ir.module.category" id="trialida_category">
+      <field name="name">Usuarios Cooperativa</field>
+      <field name="description">Sistema de cooperativa de ahorro y crédito</field>
+      <field name="sequence">1</field>
+    </record>
+
+    <record model="res.groups" id="trialida_socios">
+      <field name="name">Socios</field>
+      <field name="category_id" ref="trialida_category"/>
+    </record>
+
+    <record model="res.groups" id="trialida_cajero">
+      <field name="name">Cajero</field>
+      <field name="category_id" ref="trialida_category"/>
+    </record>
+
+    <record model="res.groups" id="trialida_contador">
+      <field name="name">Contador</field>
+      <field name="category_id" ref="trialida_category"/>
+    </record>
+
+    <record model="res.groups" id="trialida_admin">
+      <field name="name">Administrador</field>
+      <field name="category_id" ref="trialida_category"/>
+    </record>
+
+    <record model="res.groups" id="trialida_agente">
+      <field name="name">Agente de cuenta</field>
+      <field name="category_id" ref="trialida_category"/>
+    </record>
+
+    <record model="res.groups" id="trialida_asesor">
+      <field name="name">Asesor</field>
+      <field name="category_id" ref="trialida_category"/>
+    </record>
+
+  </data>
+</odoo>

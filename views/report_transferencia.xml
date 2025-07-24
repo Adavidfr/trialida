@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <data>
+
+    <!-- Plantilla QWeb -->
+    <template id="report_transferencia_document">
+      <t t-call="web.external_layout">
+        <div class="page">
+          <h2 style="text-align:center">Comprobante de Transferencia</h2>
+          <table class="table table-condensed">
+            <tr><td><strong>Fecha:</strong></td><td><t t-esc="doc.fecha_transferencia"/></td></tr>
+            <tr><td><strong>Cuenta Origen:</strong></td><td><t t-esc="doc.cuenta_origen_id.numero_cuenta"/></td></tr>
+            <tr><td><strong>Cuenta Destino:</strong></td><td><t t-esc="doc.cuenta_destino_id.numero_cuenta"/></td></tr>
+            <tr><td><strong>Destinatario:</strong></td><td><t t-esc="doc.destinatario.name"/></td></tr>
+            <tr><td><strong>Monto:</strong></td><td><t t-esc="doc.monto"/> USD</td></tr>
+            <tr><td><strong>Referencia:</strong></td><td><t t-esc="doc.referencia"/></td></tr>
+            <tr><td><strong>Código:</strong></td><td><t t-esc="doc.codigo"/></td></tr>
+          </table>
+        </div>
+      </t>
+    </template>
+
+    <!-- Registro del reporte -->
+    <report
+      id="action_report_transferencia"
+      string="Comprobante de Transferencia"
+      model="trialida.transferencias"
+      report_type="qweb-pdf"
+      name="trialida.report_transferencia_document"
+      file="trialida.report_transferencia_document"
+      print_report_name="'Comprobante Transferencia - %s' % (object.codigo)"
+    />
+
+  </data>
+</odoo>

@@ -20,12 +20,15 @@ Long description of module's purpose
         'data/users_data.xml',
         'security/ir.model.access.csv',
         'views/res_partner_views.xml',
-        'views/views_trialida_cuenta.xml',
+        # 'report/report_cuenta.xml',  
+        'views/views_trialida_cuenta.xml',  
         'data/sequence_data.xml',
         'views/view_trialida_operaciones.xml',
         'views/report_transferencia.xml',
         'views/view_trialida_transferencias.xml',
         'views/view_trialida_prestamo.xml',
+        'views/view_trialida_agente_menu.xml'
+        
     ],
 
     'installable': True,

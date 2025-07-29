@@ -1,0 +1,97 @@
+<!-- <odoo>
+  <data>
+    
+    <!-- Acción del reporte -->
+    <!-- <report
+        id="action_report_trialida_cuenta"
+        model="trialida.cuenta"
+        string="Reporte de Cuenta"
+        report_type="qweb-pdf"
+        name="trialida.report_cuenta"
+        file="trialida.report_cuenta"
+        print_report_name="'Cuenta - %s' % object.numero_cuenta"
+    /> -->
+
+    <!-- Plantilla QWeb -->
+    <template id="report_cuenta">
+      <t t-call="web.external_layout">
+        <div class="page">
+          <h2>Detalle de Cuenta</h2>
+          <p><strong>Número de cuenta:</strong> <t t-esc="object.numero_cuenta"/></p>
+          <p><strong>Socio:</strong> <t t-esc="object.socio_id.name"/></p>
+          <p><strong>Fecha de apertura:</strong> <t t-esc="object.fecha_apertura"/></p>
+          <p><strong>Saldo actual:</strong> <t t-esc="object.saldo_actual"/></p>
+          <p><strong>Tipo de cuenta:</strong> <t t-esc="object.tipo_cuenta"/></p>
+          <p><strong>Estado:</strong> <t t-esc="object.estado"/></p>
+
+          <h3>Movimientos</h3>
+          <table class="table table-sm">
+            <thead>
+              <tr>
+                <th>Fecha</th>
+                <th>Tipo</th>
+                <th>Monto</th>
+                <th>Descripción</th>
+              </tr>
+            </thead>
+            <tbody>
+              <t t-foreach="object.movimiento_id" t-as="mov">
+                <tr>
+                  <td><t t-esc="mov.fecha_movimiento"/></td>
+                  <td><t t-esc="mov.tipo_movimiento"/></td>
+                  <td><t t-esc="mov.monto"/></td>
+                  <td><t t-esc="mov.descripcion"/></td>
+                </tr>
+              </t>
+            </tbody>
+          </table>
+
+          <h3>Transferencias</h3>
+          <table class="table table-sm">
+            <thead>
+              <tr>
+                <th>Destino</th>
+                <th>Monto</th>
+                <th>Fecha</th>
+                <th>Estado</th>
+              </tr>
+            </thead>
+            <tbody>
+              <t t-foreach="object.transferencia_id" t-as="t">
+                <tr>
+                  <td><t t-esc="t.cuenta_destino_id.numero_cuenta"/></td>
+                  <td><t t-esc="t.monto"/></td>
+                  <td><t t-esc="t.fecha_transferencia"/></td>
+                  <td><t t-esc="t.estado"/></td>
+                </tr>
+              </t>
+            </tbody>
+          </table>
+
+          <h3>Préstamos</h3>
+          <table class="table table-sm">
+            <thead>
+              <tr>
+                <th>Monto</th>
+                <th>Tasa</th>
+                <th>Duración</th>
+                <th>Estado</th>
+              </tr>
+            </thead>
+            <tbody>
+              <t t-foreach="object.prestamo_ids" t-as="p">
+                <tr>
+                  <td><t t-esc="p.monto"/></td>
+                  <td><t t-esc="p.tasa_interes"/></td>
+                  <td><t t-esc="p.duracion"/></td>
+                  <td><t t-esc="p.estado"/></td>
+                </tr>
+              </t>
+            </tbody>
+          </table>
+        </div>
+      </t>
+    </template>
+
+  </data>
+</odoo> -->

@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 
-from odoo import models, fields, api
+from odoo import _, models, fields, api
 from odoo.exceptions import UserError
 from datetime import datetime
+from dateutil.relativedelta import relativedelta
 
 class trialidaCuenta(models.Model):
     _name = 'trialida.cuenta'
@@ -11,7 +12,10 @@ class trialidaCuenta(models.Model):
 
     numero_cuenta = fields.Char('Numero de cuenta')
     socio_id = fields.Many2one('res.partner', string='Socio')
-    fecha_apertura = fields.Date('Fecha de apertura')
+    fecha_apertura = fields.Datetime(        
+        string='Fecha de apertura',
+        default=fields.Datetime.now,
+        readonly=True)
     saldo_actual = fields.Float(string='Saldo actual')
     estado = fields.Selection([
         ('active', 'Activa'),
@@ -30,35 +34,37 @@ class trialidaCuenta(models.Model):
     transferencia_id = fields.One2many(
         'trialida.transferencias', 'cuenta_origen_id', string='Transferencia')
     
-    prestamo_id = fields.One2many(
+    prestamo_ids = fields.One2many(
         'trialida.prestamo', 'cuenta_id', string='Préstamos')
 
 
-    @api.model_create_multi
-    def create(self, vals):
-        for record in vals:
-            if record.get('socio_id'):
-                partner = self.env['res.partner'].browse(record.get('socio_id'))
-                user = self.env['res.users'].search([('partner_id', '=', partner.id)])
-                record['user_id'] = user.id
-                seq = self.env.ref('trialida.seq_trialida_cuentas').next_by_code('trialida.cuentas')
-                record['numero_cuenta'] = seq 
-        return super(trialidaCuenta, self).create(vals)
-
-
+@api.model_create_multi
+def create(self, vals):
+    for record in vals:
+        if record.get('socio_id'):
+            partner = self.env['res.partner'].browse(record.get('socio_id'))
+            user = self.env['res.users'].search([('partner_id', '=', partner.id)])
+            record['user_id'] = user.id
+            seq = self.env.ref('trialida.seq_trialida_cuentas').next_by_code('trialida.cuentas')
+            record['numero_cuenta'] = seq
+        record['fecha_apertura'] = Datetime.now() 
+    return super(trialidaCuenta, self).create(vals)
 
 class trialidaMovimientos(models.Model):
     _name = 'trialida.movimientos'
     _description = 'Modelo de manejo de movimientos de Cuentas'
 
     cuenta_id = fields.Many2one('trialida.cuenta', string='Cuenta')
-    codigo = fields.Char('Çódigo')
+    codigo = fields.Char('Código')
     tipo_movimiento = fields.Selection([('deposito', 'Deposito'),
                                         ('retiro', 'Retiro'),
                                         ('tentrada', 'Transferencia Entrada'),
                                         ('tsalida', 'Transferencia Salida')])
     monto = fields.Float(string='Monto')
-    fecha_movimiento = fields.Datetime('Fecha de movimiento')
+    fecha_movimiento = fields.Datetime(        
+        string='Fecha de transferencia',
+        default=fields.Datetime.now,
+        readonly=True)
     descripcion = fields.Char(string='Descripcion')
     saldo_post_movimiento = fields.Float(string='Saldo post movimiento')
 
@@ -74,6 +80,11 @@ class trialidaOperaciones(models.TransientModel):
                                         ('retiro', 'Retiro')])
     monto = fields.Float(string='Monto')
     descripcion = fields.Char(string='Descripcion')
+    codigo = fields.Char(string='Código', readonly=True)
+    fecha_movimiento = fields.Datetime(        
+        string='Fecha de transferencia',
+        default=fields.Datetime.now,
+        readonly=True)
 
     def aceptar_operacion(self):
         if self.tipo_movimiento == 'deposito':
@@ -93,9 +104,6 @@ class trialidaOperaciones(models.TransientModel):
 
         self.env['trialida.movimientos'].create(val)
         self.cuenta_id.saldo_actual = op
-        # cuenta_obj = self.env['trialida.cuenta'].browse(self.cuenta_id.id)
-        # cuenta_obj.write({'saldo_actual': op})
-        # self.env['trialida.cuenta'].write({'saldo_actual': op})
 
 class trialidaTransferencias(models.Model):
     _name = 'trialida.transferencias'
@@ -106,7 +114,10 @@ class trialidaTransferencias(models.Model):
     destinatario = fields.Many2one(related='cuenta_destino_id.socio_id', string='Destinatario', readonly=True)
     codigo = fields.Char(string='Código Transferencia')
     monto = fields.Float(string='Monto', required=True)
-    fecha_transferencia = fields.Datetime('Fecha de Transferencia')
+    fecha_transferencia = fields.Datetime(        
+        string='Fecha de transferencia',
+        default=fields.Datetime.now,
+        readonly=True)
     estado = fields.Selection([('pendiente', 'Pendiente'),
                                ('completado', 'Completado'),
                                ('cancelada', 'Cancelada')],
@@ -182,19 +193,35 @@ class TrialidaPrestamo(models.Model):
 
     socio_id = fields.Many2one('res.partner', string='Socio')
     cuenta_id = fields.Many2one('trialida.cuenta', string='Cuenta')
+    agente_id = fields.Many2one('res.users', string='Agente de cuentas', readonly=True)
     monto = fields.Float(string='Monto')
     tasa_interes = fields.Float(string='Tasa de interés (%)')
-    duracion = fields.Integer(string='Duración (meses)')
-    fecha_otorgamiento = fields.Date(string='Fecha de otorgamiento')
+    duracion = fields.Selection(
+        selection=[
+            ('3', '3 meses'),
+            ('6', '6 meses'),
+            ('9', '9 meses'),
+            ('12', '12 meses')
+        ],
+        string='Duración (meses)',
+        required=True
+    )
+    fecha_solicitud = fields.Datetime(        
+        string='Fecha de transferencia',
+        default=fields.Datetime.now,
+        readonly=True)
     estado = fields.Selection([
         ('aprobado', 'Aprobado'),
         ('pendiente', 'Pendiente'),
         ('rechazado', 'Rechazado'),
     ], default='pendiente', string='Estado')
 
+    fecha_desembolso = fields.Date(string='Fecha de desembolso', readonly=True)
+
     def action_aprobar(self):
         for record in self:
             record.estado = 'aprobado'
+            record.fecha_desembolso = fields.Date.context_today(self)
 
     def action_rechazar(self):
         for record in self:
@@ -203,35 +230,85 @@ class TrialidaPrestamo(models.Model):
 
     amortizacion_line_ids = fields.One2many(
         'trialida.prestamo.linea',  # modelo hijo
-        'prestamo_id',              # campo Many2one en el modelo hijo que referencia a este modelo
+        'prestamo_ids',              # campo Many2one en el modelo hijo que referencia a este modelo
         string='Líneas de amortización'
     )
 
     def calcular_amortizacion(self):
-        # Aquí iría tu lógica para calcular la tabla de amortización
-        # Ejemplo simple: crear líneas vacías o con datos dummy para probar la vista
-        self.amortizacion_line_ids.unlink()  # borrar líneas previas
-        for i in range(1, self.duracion + 1):
-            self.env['trialida.prestamo.linea'].create({
-                'prestamo_id': self.id,
-                'numero_cuota': i,
-                'fecha_pago': False,
-                'cuota': 0.0,
-                'interes': 0.0,
-                'capital': 0.0,
-                'saldo': 0.0,
-                'pagado': False,
-            })
+        for prestamo in self:
+            prestamo.amortizacion_line_ids.unlink()
+            if not prestamo.monto or not prestamo.tasa_interes or not prestamo.duracion:
+                raise UserError("Debe ingresar monto, tasa de interés y duración.")
+            monto = prestamo.monto
+            tasa = prestamo.tasa_interes / 100.0 / 12.0
+            n = int(prestamo.duracion)
+            if tasa > 0:
+                cuota = monto * (tasa * pow(1 + tasa, n)) / (pow(1 + tasa, n) - 1)
+            else:
+                cuota = monto / n
+            saldo = monto
+
+            fecha_base = prestamo.fecha_desembolso or fields.Date.context_today(prestamo)
+            for i in range(1, n + 1):
+                fecha_pago = fecha_base + relativedelta(months=i-1)
+                interes = saldo * tasa
+                capital = cuota - interes
+                saldo -= capital
+                prestamo.amortizacion_line_ids.create({
+                    'prestamo_ids': prestamo.id,
+                    'numero_cuota': i,
+                    'fecha_pago': fecha_pago,
+                    'cuota': round(cuota, 2),
+                    'interes': round(interes, 2),
+                    'capital': round(capital, 2),
+                    'saldo': round(max(saldo, 0), 2),
+                    'estado_pago': 'pendiente',
+                })
+
+    def enviar_solicitud(self):
+        for prestamo in self:
+            if prestamo.estado != 'pendiente':
+                raise UserError(_("La solicitud ya fue enviada o procesada."))
+            socio = prestamo.socio_id
+            cuenta = self.env['trialida.cuenta'].search([('socio_id', '=', socio.id)], limit=1)
+            if cuenta.user_id.id != self.env.uid:
+                raise UserError(_(f"No puede solicitar un préstamo con una cuenta que no es suya. {cuenta.user_id.id}"))
+            prestamo.estado = 'pendiente'
+            prestamo.cuenta_id = cuenta.id
+            return {
+                'effect': {
+                    'fadeout': 'slow',
+                    'message': '¡Tu solicitud ha sido enviada!',
+                    'type': 'rainbow_man',
+                }
+            }
+
 
 class TrialidaPrestamoLinea(models.Model):
     _name = 'trialida.prestamo.linea'
     _description = 'Línea de amortización del préstamo'
 
-    prestamo_id = fields.Many2one('trialida.prestamo', string='Préstamo', ondelete='cascade')
+    prestamo_ids = fields.Many2one('trialida.prestamo', string='Préstamo', ondelete='cascade')
     numero_cuota = fields.Integer(string='Número de cuota')
-    fecha_pago = fields.Date(string='Fecha de pago')
+    fecha_pago = fields.Date(string='Fecha de desembolso')
     cuota = fields.Float(string='Cuota')
     interes = fields.Float(string='Interés')
     capital = fields.Float(string='Capital')
     saldo = fields.Float(string='Saldo')
-    pagado = fields.Boolean(string='Pagado', default=False)
+    estado_pago = fields.Selection([
+        ('pendiente', 'Pendiente'),
+        ('pagado', 'Pagado')
+    ], string='Estado', default='pendiente')
+    estado_desembolso = fields.Selection([
+        ('pendiente', 'Pendiente'),
+        ('realizado', 'Realizado')
+    ], string='Estado desembolso', compute='_compute_estado_desembolso', store=True)
+
+    @api.depends('fecha_pago')
+    def _compute_estado_desembolso(self):
+        today = fields.Date.context_today(self)
+        for linea in self:
+            if linea.fecha_pago and linea.fecha_pago <= today:
+                linea.estado_desembolso = 'realizado'
+            else:
+                linea.estado_desembolso = 'pendiente'

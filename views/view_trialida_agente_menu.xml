@@ -1,0 +1,18 @@
+<odoo>
+  <data>
+    <!-- Acción: Lista de solicitudes de préstamo asignadas al agente -->
+    <record id="action_prestamos_agente" model="ir.actions.act_window">
+      <field name="name">Solicitudes de Préstamo</field>
+      <field name="res_model">trialida.prestamo</field>
+      <field name="view_mode">list,form</field>
+      <field name="domain">[('estado','=','pendiente'), ('agente_id','=',uid)]</field>
+    </record>
+
+    <!-- Menú solo visible para agentes -->
+    <menuitem id="menu_prestamos_agente"
+              name="Solicitudes Asignadas"
+              parent="trialida_prestamo_menu"
+              action="action_prestamos_agente"
+              groups="trialida.trialida_agente"/>
+  </data>
+</odoo>

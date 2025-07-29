@@ -1,7 +1,6 @@
 <odoo>
   <data>
 
-    <!-- trialida Cuentas list view  -->
     <record model="ir.ui.view" id="trialida_cuenta_lista">
       <field name="name">trialida cuenta list</field>
       <field name="model">trialida.cuenta</field>
@@ -17,7 +16,6 @@
       </field>
     </record>
 
-    <!-- trialida Cuentas form view -->
     <record model="ir.ui.view" id="trialida_cuenta_form">
       <field name="name">trialida cuenta form</field>
       <field name="model">trialida.cuenta</field>
@@ -35,13 +33,21 @@
             <field name="estado" readonly="1" groups="trialida.trialida_socio"/>
           </group>
 
+          <!-- <header>
+            <button name="%(action_report_trialida_cuenta)d"
+                    string="Generar Reporte"
+                    type="action"
+                    class="btn-primary"/>
+          </header> -->
+
           <separator string="Movimientos"/>
           <field name="movimiento_id" nolabel="1">
             <list>
               <field name="tipo_movimiento"/>
               <field name="monto"/>
-              <field name="fecha_movimiento"/>
+              <field name="fecha_movimiento" readonly="1"/>
               <field name="descripcion"/>
+              <field name="codigo"/>
             </list>
           </field>
 
@@ -57,25 +63,22 @@
               <field name="referencia"/>
             </list>
           </field>
-          
+
           <separator string="Préstamos"/>
-          <field name="prestamo_id" nolabel="1">
+          <field name="prestamo_ids" nolabel="1">
             <list>
+              <field name="socio_id"/>
               <field name="monto"/>
               <field name="tasa_interes"/>
               <field name="duracion"/>
-              <field name="fecha_otorgamiento"/>
-              <field name="estado"/>
+              <field name="fecha_solicitud" readonly="1"/>
+              <field name="estado" readonly="1"/>
             </list>
           </field>
-
-
-
         </form>
       </field>
     </record>
 
-    <!-- acciones de cuentas -->
     <record model="ir.actions.act_window" id="trialida_cuenta_action_window">
       <field name="name">trialida cuenta window</field>
       <field name="res_model">trialida.cuenta</field>
@@ -89,7 +92,6 @@
       <field name="view_mode">list,form</field>
     </record>
 
-    <!-- VISTA FORM DE TRANSFERENCIAS (única) -->
     <record model="ir.ui.view" id="trialida_transferencias_form">
       <field name="name">trialida transferencias form</field>
       <field name="model">trialida.transferencias</field>
@@ -117,17 +119,14 @@
       </field>
     </record>
 
-    <!-- ACCION SOLO FORM PARA TRANSFERENCIAS -->
     <record model="ir.actions.act_window" id="trialida_transferencias_action_window">
       <field name="name">Transferencias</field>
       <field name="res_model">trialida.transferencias</field>
       <field name="view_mode">form</field>
     </record>
 
-    <!-- MENÚ PRINCIPAL -->
     <menuitem name="TRIALIDA" id="menu_root" groups="base.group_user"/>
 
-    <!-- Menús secundarios -->
     <menuitem name="Mi Cuenta" id="trialida_cuentas"
               parent="menu_root"
               action="trialida_cuenta_action_window"

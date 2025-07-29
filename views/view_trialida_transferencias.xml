@@ -16,7 +16,7 @@
             <field name="referencia"/>
           </group>
           <group>
-            <field name="fecha_transferencia" required="1"/>
+            <field name="fecha_transferencia" readonly="1"/>
           </group>
           <footer>
             <button name="realizar_transferencia"

@@ -2,7 +2,6 @@
 <odoo>
   <data>
 
-    <!-- Vista formulario de préstamo -->
     <record id="view_trialida_prestamo_form" model="ir.ui.view">
       <field name="name">trialida.prestamo.form</field>
       <field name="model">trialida.prestamo</field>
@@ -14,42 +13,65 @@
               <field name="monto"/>
               <field name="tasa_interes"/>
               <field name="duracion"/>
-              <field name="fecha_otorgamiento"/>
+              <field name="fecha_solicitud" readonly="1"/>
               <field name="estado" readonly="1"/>
             </group>
+
             <button name="calcular_amortizacion" type="object" string="Calcular Amortización" class="btn-primary"/>
+
             <notebook>
               <page string="Tabla de Amortización">
                 <field name="amortizacion_line_ids" nolabel="1">
-                  <form>
-                    <group>
-                      <field name="numero_cuota"/>
-                      <field name="fecha_pago"/>
-                      <field name="cuota"/>
-                      <field name="interes"/>
-                      <field name="capital"/>
-                      <field name="saldo"/>
-                      <field name="pagado"/>
-                    </group>
-                  </form>
+                  <list create="false" delete="false">
+                    <field name="numero_cuota"/>
+                    <field name="fecha_pago"/>
+                    <field name="cuota"/>
+                    <field name="interes"/>
+                    <field name="capital"/>
+                    <field name="saldo"/>
+                    <field name="estado_pago"/>
+                  </list>
                 </field>
               </page>
             </notebook>
+            <!-- Botones sin control de visibilidad en XML -->
+            <button name="enviar_solicitud"
+                    string="Solicitar Préstamo"
+                    type="object"
+                    class="btn-primary"/>
+
+            <button string="Cancelar"
+                    special="cancel"
+                    class="btn-secondary"/>
+
+            <button name="action_aprobar"
+                    type="object"
+                    string="Aprobar"
+                    class="btn btn-primary"
+                    groups="trialida.trialida_agente"/>
+
+            <button name="action_rechazar"
+                    type="object"
+                    string="Rechazar"
+                    class="btn btn-danger"
+                    groups="trialida.trialida_agente"/>
+
+
           </sheet>
+
         </form>
       </field>
     </record>
 
-    <!-- Acción para abrir solo la vista formulario -->
     <record id="action_trialida_prestamo" model="ir.actions.act_window">
       <field name="name">Préstamos</field>
       <field name="res_model">trialida.prestamo</field>
       <field name="view_mode">form</field>
       <field name="view_id" ref="view_trialida_prestamo_form"/>
+      <field name="domain">[('estado', '==', 'pendiente')]</field>
       <field name="target">current</field>
     </record>
 
-    <!-- Menús -->
     <menuitem id="trialida_prestamo_menu" name="Préstamos" parent="menu_root" action="action_trialida_prestamo"/>
 
   </data>
